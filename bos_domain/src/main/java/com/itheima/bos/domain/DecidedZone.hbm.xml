@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.itheima.bos.domain">
+    <class name="DecidedZone" table="bc_decidedzone">
+        <id name="id">
+            <generator class="assigned"></generator>
+        </id>
+        <property name="name" column="name"></property>
+
+        <!-- 集合,一对多关系 -->
+        <set name="subareas_De" inverse="true">
+            <key column="decidedzone_id"></key>
+            <one-to-many class="Subarea"></one-to-many>
+        </set>
+
+        <!--//多对一-->
+        <many-to-one name="staff" lazy="false" column="staff_id" class="Staff" ></many-to-one>
+    </class>
+
+</hibernate-mapping>

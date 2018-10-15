@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.itheima.bos.domain">
+    <class name="function" table="auth_function">
+        <id name="id">
+        <generator class="uuid"></generator>
+    </id>
+        <property name="name"></property>
+        <property name="code"></property>
+        <property name="description"></property>
+        <property name="page"></property>
+        <property name="generatemenu"></property>
+        <property name="zindex"></property>
+
+        <!-- 配置权限与角色的多对多关系 -->
+        <set name="roles_fun" lazy="false" table="role_function">
+            <key column="fun_rf"></key>
+            <many-to-many class="Role" column="role_ff"></many-to-many>
+        </set>
+
+        <!-- 自己与自己关联 -->
+        <many-to-one name="parentFunction" class="function" fetch="select">
+            <column name="pid"></column>
+        </many-to-one>
+
+        <set name="sonFunctions" lazy="false" inverse="true">
+            <key column="pid"></key>
+            <one-to-many class="function" />
+        </set>
+
+    </class>
+
+</hibernate-mapping>

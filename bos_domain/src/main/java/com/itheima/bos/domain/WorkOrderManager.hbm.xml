@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.itheima.bos.domain">
+    <class name="WorkOrderManager" table="qp_workordermanage">
+        <id name="id">
+            <generator class="assigned"></generator>
+        </id>
+        <property name="arrivecity"></property>
+        <property name="product"></property>
+        <property name="num"></property>
+        <property name="weight"></property>
+        <property name="floadreqr"></property>
+        <property name="prodtimelimit"></property>
+        <property name="prodtype"></property>
+        <property name="sendername"></property>
+        <property name="senderphone"></property>
+        <property name="senderaddr"></property>
+        <property name="receivername"></property>
+        <property name="receiverphone"></property>
+        <property name="receiveraddr"></property>
+        <property name="feeitemnum"></property>
+        <property name="actlweit"></property>
+        <property name="vol"></property>
+        <property name="managerCheck"></property>
+        <property name="updatetime"></property>
+
+    </class>
+</hibernate-mapping>

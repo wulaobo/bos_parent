@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.itheima.bos.domain">
+    <class name="Role" table="auth_role">
+        <id name="id">
+            <generator class="uuid"></generator>
+        </id>
+        <property name="name"></property>
+        <property name="code"></property>
+        <property name="description"></property>
+
+        <!-- 配置角色与用户的多对多关系 -->
+        <set name="users" table="user_role">
+            <key column="role_uf"></key>
+            <many-to-many class="User" column="user_rf"></many-to-many>
+        </set>
+
+        <!-- 配置角色与权限的多对多关系 -->
+        <set name="functions" table="role_function">
+            <key column="role_ff"></key>
+            <many-to-many class="function" column="fun_rf"></many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

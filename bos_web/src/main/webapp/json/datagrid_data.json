@@ -1,0 +1,9 @@
+{
+  "total":"65",
+  "rows":[
+    {"id":"1","name":"小白","age":"20","address":"香港","sex":"男"},
+    {"id":"2","name":"小名","age":"22","address":"北京","sex":"女"},
+    {"id":"3","name":"小刚","age":"24","address":"上海","sex":"男"},
+    {"id":"3","name":"小刚","age":"24","address":"上海","sex":"男"}
+  ]
+}

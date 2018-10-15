@@ -1,0 +1,181 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:soap="http://cxf.apache.org/bindings/soap"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://cxf.apache.org/bindings/soap
+	http://cxf.apache.org/schemas/configuration/soap.xsd
+	http://cxf.apache.org/jaxws
+	http://cxf.apache.org/schemas/jaxws.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- 加载db.properties文件 -->
+    <context:property-placeholder location="classpath:db.properties" />
+
+    <!-- 配置数据源 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" >
+        <property name="driverClass" value="${jdbc.driverClass}"></property>
+        <property name="jdbcUrl" value="${jdbc.jdbcUrl}"></property>
+        <property name="user" value="${jdbc.user}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+    <!-- 配置LocalSessionFactoryBean，spring提供的用于整合hibernate的工厂bean -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="hibernateProperties">
+            <props>
+                <!-- 必选配置 -->
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+
+                <!-- 可选配置 -->
+                <!-- 将hibernate生成的sql语句打印到控制台 -->
+                <prop key="hibernate.show_sql">true</prop>
+                <!-- 将hibernate生成的sql语句格式化(语法缩进) -->
+                <prop key="hibernate.format_sql">true</prop>
+                <!-- 自动导出表结构. 自动建表 -->
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+
+        <!-- 注入hibernate的映射文件 -->
+        <property name="mappingLocations">
+            <list>
+                <value>classpath:com/itheima/bos/domain/User.hbm.xml</value>
+                <value>classpath:com/itheima/bos/domain/Staff.hbm.xml</value>
+                <value>classpath:com/itheima/bos/domain/Region.hbm.xml</value>
+                <value>classpath:com/itheima/bos/domain/DecidedZone.hbm.xml</value>
+                <value>classpath:com/itheima/bos/domain/Subarea.hbm.xml</value>
+                <value>classpath:com/itheima/bos/domain/NoticeBill.hbm.xml</value>
+                <value>classpath:com/itheima/bos/domain/Workbill.hbm.xml</value>
+                <value>classpath:com/itheima/bos/domain/WorkOrderManager.hbm.xml</value>
+                <value>classpath:com/itheima/bos/domain/function.hbm.xml</value>
+                <value>classpath:com/itheima/bos/domain/Role.hbm.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 配置事务核心管理器 -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+
+    <!-- 开启注解事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- 支持spring注解 -->
+    <context:annotation-config/>
+
+    <!-- 组件扫描 -->
+    <context:component-scan base-package="com.itheima.bos"/>
+
+    <!-- 配置shiro的过滤器 -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!-- 注入安全管理器 -->
+        <property name="securityManager" ref="securityManager"></property>
+        <!-- 注入系统的登录访问路径 -->
+        <!-- 跳转到登录页面 -->
+        <property name="loginUrl" value="/login.jsp"></property>
+        <!-- 成功页面 -->
+        <property name="successUrl" value="/index.jap"></property>
+        <!-- 权限不足的错误提示页面 -->
+        <property name="unauthorizedUrl" value="/unauthorized.jsp"></property>
+
+        <!--
+                   URL路径自上而下进行匹配
+                -->
+        <!--
+            anon过滤器处理原则 ：随便访问
+            authc需要进行权限认证
+            /** 表示拦截一切请求
+         -->
+        <property name="filterChainDefinitions">
+            <value>
+               /css/** = anon
+               /js/** = anon
+               /images/** = anon
+                /validatecode.jsp* = anon
+                /login.jsp = anon
+               /userAction_login.action = anon
+               /page_base_staff.action = perms["staff-list"]
+                /* = authc
+            </value>
+        </property>
+    </bean>
+
+    <!-- 配置shiro安全管理器 -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="bosRealm"></property>
+        <property name="cacheManager" ref="EhcacheManager"></property>
+    </bean>
+
+    <!-- 注册shiro框架中realm -->
+    <bean id="bosRealm" class="com.itheima.bos.realm.BosRealm"></bean>
+
+    <!-- 注册ehcache -->
+    <bean id="EhcacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <property name="cacheManagerConfigFile" value="classpath:ehcache.xml"></property>
+    </bean>
+
+    <!-- 配置shiro框架开始注解支持 -->
+    <bean id="defaultAdvisorAutoProxyCreator" class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
+        <!-- 必须使用cglib动态代理的方式 (value=true表示使用cglib动态代理,value=false则表示使用jdk动态代理的方式) -->
+        <property name="proxyTargetClass" value="true"></property>
+    </bean>
+
+    <!-- 配置shiro切面类 -->
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor"></bean>
+
+
+    <jaxws:client id="crmClient" serviceClass="com.itheima.CustomerService" address="http://localhost:8081/bos_crm32/service/customer"></jaxws:client>
+
+
+    <!-- 注册mailJob -->
+    <!--<bean id="mailJob" class="com.itheima.bos.jobs.MailJob">-->
+        <!--<property name="username" value="itcast_server@126.com"/>-->
+        <!--<property name="password" value="147963qP"/>-->
+        <!--<property name="smtpServer" value="smtp.126.com"/>-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; 配置jobDetail &ndash;&gt;-->
+    <!--<bean id="myJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">-->
+        <!--&lt;!&ndash; 用到的Job实例 &ndash;&gt;-->
+        <!--<property name="targetObject">-->
+            <!--<ref bean="mailJob"></ref>-->
+        <!--</property>-->
+        <!--&lt;!&ndash; myQuartz中实例的方法 &ndash;&gt;-->
+        <!--<property name="targetMethod">-->
+            <!--<value>execute</value>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; 配置触发器Trigger &ndash;&gt;-->
+    <!--<bean id="myTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">-->
+        <!--<property name="jobDetail">-->
+            <!--<ref bean="myJobDetail"></ref>-->
+        <!--</property>-->
+        <!--<property name="cronExpression">-->
+            <!--&lt;!&ndash; 每5秒执行一次 &ndash;&gt;-->
+            <!--<value>0/5 * * * * ?</value>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; 配置scheduler工厂 &ndash;&gt;-->
+    <!--<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
+        <!--<property name="triggers">-->
+            <!--<list>-->
+                <!--<ref bean="myTrigger"/>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+</beans>

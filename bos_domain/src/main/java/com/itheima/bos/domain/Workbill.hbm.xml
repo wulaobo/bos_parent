@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.itheima.bos.domain">
+    <class name="Workbill" table="qp_workbill">
+        <id name="id">
+            <generator class="uuid"></generator>
+        </id>
+        <property name="type"></property>
+        <property name="pickstate"></property>
+        <property name="buildtime"></property>
+        <property name="attachbilltimes"></property>
+        <property name="remark"></property>
+
+        <!-- 多对一 -->
+        <many-to-one name="staff" column="staff_id" class="Staff"></many-to-one>
+        <many-to-one name="noticeBill" cascade="save-update,persist" column="noticebill_id" class="NoticeBill"></many-to-one>
+    </class>
+</hibernate-mapping>

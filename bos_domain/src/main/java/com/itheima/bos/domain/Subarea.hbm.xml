@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.itheima.bos.domain">
+    <class name="Subarea" table="bc_subarea">
+        <id name="id">
+            <generator class="uuid"></generator>
+        </id>
+        <property name="addresskey"></property>
+        <property name="startnum"></property>
+        <property name="endnum"></property>
+        <property name="single"></property>
+        <property name="position"></property>
+
+        <many-to-one name="region" lazy="false" column="region_id" class="Region"></many-to-one>
+        <many-to-one name="decidedZone" lazy="false" column="decidedzone_id" class="DecidedZone"></many-to-one>
+    </class>
+
+</hibernate-mapping>

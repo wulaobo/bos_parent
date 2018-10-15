@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.itheima.bos.domain">
+    <class name="NoticeBill" table="qp_noticebill">
+        <id name="id">
+            <generator class="uuid"></generator>
+        </id>
+        <property name="customer_id"></property>
+        <property name="customer_name"></property>
+        <property name="delegater"></property>
+        <property name="telephone"></property>
+        <property name="pickaddress"></property>
+        <property name="arrivecity"></property>
+        <property name="product"></property>
+        <property name="pickdate"></property>
+        <property name="num"></property>
+        <property name="weight"></property>
+        <property name="volume"></property>
+        <property name="remark"></property>
+        <property name="ordertype"></property>
+
+        <!-- 多对一 -->
+        <many-to-one name="user" column="user_id" class="User"></many-to-one>
+        <many-to-one name="staff" column="staff_id" class="Staff"></many-to-one>
+
+        <!-- 一对多 -->
+        <set name="workbills">
+            <key column="noticebill_id"></key>
+            <one-to-many class="Workbill"></one-to-many>
+        </set>
+    </class>
+</hibernate-mapping>
